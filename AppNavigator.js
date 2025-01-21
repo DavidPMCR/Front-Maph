@@ -8,6 +8,7 @@ import agendaScreen from './screens/agendaScreen';
 import patientScreen from './screens/patientScreen';
 import createPatientScreen from './screens/createPatientScreen';
 import createConsultationScreen from './screens/createConsultationScreen';
+import forgotPasswordScreen from './screens/forgotPasswordScreen'; // Pantalla de Recuperar Contraseña
 
 const Stack = createStackNavigator();
 
@@ -49,13 +50,17 @@ const AppNavigator = () => {
           options={{ title: 'Consulta' }}
         />
 
+        <Stack.Screen
+          name="agendaScreen"
+          component={agendaScreen}
+          options={{ title: 'Agenda' }}
+        />
 
-
-<Stack.Screen
-  name="agendaScreen"
-  component={agendaScreen}
-  options={{ title: 'Agenda' }}
-/>
+        <Stack.Screen
+          name="forgotPasswordScreen"
+          component={forgotPasswordScreen}
+          options={{ title: 'Recuperar Contraseña' }}
+        />
 
        
       </Stack.Navigator>

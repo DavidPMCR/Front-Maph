@@ -9,7 +9,6 @@ import patientScreen from './screens/patientScreen';
 import createPatientScreen from './screens/createPatientScreen';
 import createConsultationScreen from './screens/createConsultationScreen';
 import forgotPasswordScreen from './screens/forgotPasswordScreen'; // Pantalla de Recuperar Contraseña
-import supportScreen from './screens/supportScreen'; // Pantalla de Soporte
 
 const Stack = createStackNavigator();
 
@@ -61,12 +60,6 @@ const AppNavigator = () => {
           name="forgotPasswordScreen"
           component={forgotPasswordScreen}
           options={{ title: 'Recuperar Contraseña' }}
-        />
-
-        <Stack.Screen
-          name="supportScreen"
-          component={supportScreen}
-          options={{ title: 'Soporte Técnico' }}
         />
 
        

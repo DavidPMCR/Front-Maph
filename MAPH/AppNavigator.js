@@ -10,6 +10,11 @@ import createPatientScreen from './screens/createPatientScreen';
 import createConsultationScreen from './screens/createConsultationScreen';
 import createMedicalHistoryScreen from './screens/createMedicalHistoryScreen';
 import fileScreen from './screens/fileScreen';
+import reportScreen from './screens/reportScreen';
+import forgotPasswordScreen from './screens/forgotPasswordScreen'
+import patientFileScreen from './screens/patientFileScreen'
+import sendCreateUserMailScreen from './screens/sendCreateUserMailScreen'
+import sendSupportMailScreen from './screens/sendSupportMailScreen'
 
 const Stack = createStackNavigator();
 
@@ -67,6 +72,39 @@ const AppNavigator = () => {
           component={fileScreen}
           options={{ title: 'Archivos' }}
         />
+
+        <Stack.Screen
+          name="reportScreen"
+          component={reportScreen}
+          options={{ title: 'Generar Reportes' }}
+        />
+
+        <Stack.Screen
+          name="forgotPasswordScreen"
+          component={forgotPasswordScreen}
+          options={{ title: 'Recuperar contraseña' }}
+        />
+
+
+        <Stack.Screen
+          name="sendCreateUserMailScreen"
+          component={sendCreateUserMailScreen}
+          options={{ title: 'Solicitud de creacion de usuario' }}
+        />
+
+        <Stack.Screen
+          name="sendSupportMailScreen"
+          component={sendSupportMailScreen}
+          options={{ title: 'Solicitud de soporte APP' }}
+        />
+
+        <Stack.Screen
+          name="patientFileScreen"
+          component={patientFileScreen}
+          options={{ title: 'Archivos de paciente' }}
+        />
+
+
 
       </Stack.Navigator>
     </NavigationContainer>

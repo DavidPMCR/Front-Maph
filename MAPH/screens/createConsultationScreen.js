@@ -87,7 +87,7 @@ const ConsultationScreen = ({ route }) => {
   const handleSaveConsultation = async () => {
     try {
       // Validar datos antes de enviar
-      if (!formData.id_consulta || !formData.id_cedula || !formData.tipoconsulta || !formData.plan_tratamiento || !formData.fecha_consulta) {
+      if (!formData.id_consulta || !formData.id_cedula || !formData.tipoconsulta ||  !formData.fecha_consulta) {
         Alert.alert('Error', 'Por favor complete todos los campos obligatorios.');
         return;
       }

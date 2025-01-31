@@ -1,147 +1,100 @@
-import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
-import axios from 'axios';
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 
-const LoginScreen = ({ navigation }) => {
-  const [cedula, setCedula] = useState('');
-  const [contrasena, setContrasena] = useState('');
-  const [error, setError] = useState('');
-
-
-  const handleLogin = async () => {
-    // Validación de los campos
-    if (!cedula.trim()) {
-      setError('Usuario es obligatorio');
-      return;
-    }
-    if (!contrasena.trim()) {
-      setError('La contraseña es obligatoria');
-      return;
-    }
-
-    try {
-      const response = await axios.post('http://192.168.1.98:3001/auth/login', {
-        id_cedula: cedula,
-        contrasena: contrasena,
-      });
-
-      if (response.data.code == 200) {
-        const user = response.data.data.user; // Extraer el usuario
-        navigation.navigate('principalScreen', { user });
-        setCedula('');
-        setContrasena('');
-        setError('');
-      } else {
-        setError('Credenciales incorrectas');
-      }
-    } catch (error) {
-      setError('Hubo un error al auntentificar,usuario o contraseña invalido');
-      //console.error('Error de login:', error.message);
-    }
-  };
+const MenuWithIconsAndLogo = ({ navigation, route }) => {
+  const { user } = route.params;
 
   return (
-    <ImageBackground
-      source={require('../assets/logo.png')}
-      style={styles.background}
-    >
-      <View style={styles.container}>
-        <Text style={styles.title}>Inicia Sesión</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Usuario"
-          value={cedula}
-          onChangeText={setCedula}
-          placeholderTextColor="#888"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Contraseña"
-          secureTextEntry
-          value={contrasena}
-          onChangeText={setContrasena}
-          placeholderTextColor="#888"
-        />
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.loginButtonText}>Inicia Sesión</Text>
+    <View style={styles.container}>
+      {/* Texto de bienvenida */}
+      <Text style={styles.welcomeText}>
+        Bienvenido: {user.nombre} {user.apellidos}
+      </Text>
+
+      {/* Menú con íconos */}
+      <View style={styles.menuContainer}>
+        <TouchableOpacity
+          style={styles.menuButton}
+          onPress={() => navigation.navigate('createPatientScreen', { user })}
+        >
+          <FontAwesome name="user" size={24} color="black" />
+          <Text style={styles.menuText}>Paciente</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('sendCreateUserMailScreen')}>
-          <Text style={styles.registerText}>Registrar</Text>
+
+        <TouchableOpacity
+          style={styles.menuButton}
+          onPress={() => navigation.navigate('createMedicalHistoryScreen', { user })}
+        >
+          <FontAwesome name="heartbeat" size={24} color="black" />
+          <Text style={styles.menuText}>Antecedentes Médicos</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('forgotPasswordScreen')}>
-          <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
+
+        <TouchableOpacity
+          style={styles.menuButton}
+          onPress={() => navigation.navigate('createConsultationScreen', { user })}
+        >
+          <FontAwesome name="stethoscope" size={24} color="black" />
+          <Text style={styles.menuText}>Consulta</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('sendSupportMailScreen')}>
-          <Text style={styles.forgotPasswordText}>Solicitud de Soporte</Text>
+
+        <TouchableOpacity
+          style={styles.menuButton}
+          onPress={() => navigation.navigate('fileScreen', { user })}
+        >
+          <FontAwesome name="folder" size={24} color="black" />
+          <Text style={styles.menuText}>Subur archivos</Text>
         </TouchableOpacity>
-        <Text style={styles.pricingText}>1 mes $15</Text>
-        <Text style={styles.pricingText}>3 meses $40</Text>
-        <Text style={styles.pricingText}>1 año $120</Text>
       </View>
-    </ImageBackground>
+
+      {/* Imagen de fondo en la parte inferior */}
+      <ImageBackground
+        source={require('../assets/logo.png')} // Imagen de fondo
+        style={styles.background}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    resizeMode: 'cover',
-  },
   container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: '#f8f9fa',
+    justifyContent: 'space-between', // Distribuir elementos
+  },
+  background: {
+    height: 200, // Altura de la imagen
+    justifyContent: 'center', // Centrar contenido dentro de la imagen (si se agrega más adelante)
     alignItems: 'center',
-    padding: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Fondo semitransparente
+    resizeMode: 'cover', // Ajustar la imagen al tamaño del contenedor
   },
-  title: {
-    fontSize: 24,
+  welcomeText: {
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#000',
-  },
-  input: {
-    height: 50,
-    width: '80%',
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 15,
-    paddingHorizontal: 15,
-    backgroundColor: '#fff',
-  },
-  loginButton: {
-    backgroundColor: '#fdb813',
-    borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    marginTop: 10,
-  },
-  loginButtonText: {
-    color: '#000',
-    fontWeight: 'bold',
-  },
-  registerText: {
+    color: '#000', // Color del texto
     marginTop: 20,
-    color: '#0000ee',
-    textDecorationLine: 'underline',
+    textAlign: 'center',
   },
-  forgotPasswordText: {
-    marginTop: 10,
-    color: '#0000ee',
-    textDecorationLine: 'underline',
+  menuContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
+    marginTop: 20,
   },
-  pricingText: {
-    marginTop: 10,
-    color: '#0000ee',
-    fontSize: 16,
+  menuButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
+    backgroundColor: '#e0f7fa',
+    padding: 15,
+    borderRadius: 10,
+    elevation: 3,
   },
-  errorText: {
-    color: 'red',
-    marginBottom: 10,
-    fontSize: 14,
+  menuText: {
+    marginLeft: 10,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#000',
   },
 });
 
-export default LoginScreen;
+export default MenuWithIconsAndLogo;

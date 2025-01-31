@@ -144,7 +144,7 @@ const FileUpload = ({ route }) => {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Subir Archivos</Text>
+      <Text style={styles.title}>Subir archivos de un paciente</Text>
 
       {/* Seleccionar Paciente */}
       <Text style={styles.label}>Seleccione un Paciente:</Text>

@@ -3,9 +3,9 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, ImageBackground } 
 import axios from 'axios';
 
 const UserProfile = ({ route, navigation }) => {
-  const { user } = route.params; // Obtén los datos del usuario desde los parámetros de la ruta
-  const [isEditing, setIsEditing] = useState(false); // Controla si se puede editar el formulario
-  const [formData, setFormData] = useState({ ...user }); // Inicializa los datos del formulario
+  const { user } = route.params;
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({ ...user });
 
   const handleInputChange = (field, value) => {
     setFormData({
@@ -15,7 +15,7 @@ const UserProfile = ({ route, navigation }) => {
   };
 
   const handleEdit = () => {
-    setIsEditing(true); // Habilita la edición
+    setIsEditing(true);
   };
 
   const handleAccept = async () => {
@@ -23,14 +23,17 @@ const UserProfile = ({ route, navigation }) => {
       const response = await axios.patch(`http://192.168.1.98:3001/user`, formData);
       if (response.status === 200) {
         alert('Datos actualizados exitosamente');
-        setIsEditing(false); // Deshabilita la edición
-        navigation.navigate('principalScreen', { user: formData }); // Actualiza los datos en la pantalla principal
+        setIsEditing(false);
+        //navigation.navigate('principalScreen', { user: formData });
       }
     } catch (error) {
       console.error('Error al actualizar los datos:', error.message);
       alert('Hubo un problema al actualizar los datos');
     }
   };
+
+  // 🔹 Validar si el usuario tiene rol "D" (Dependiente)
+  const isDependiente = user?.rol?.trim()?.toUpperCase() === "D";
 
   return (
     <View style={styles.container}>
@@ -55,7 +58,7 @@ const UserProfile = ({ route, navigation }) => {
       <TextInput
         style={[styles.input, isEditing ? styles.editable : styles.readOnly]}
         value={formData.id_cedula}
-        editable={false} // La cédula no debe ser editable
+        editable={false}
         placeholder="Cédula"
       />
 
@@ -87,9 +90,18 @@ const UserProfile = ({ route, navigation }) => {
         )}
       </View>
 
-      {/* Imagen de fondo en la parte inferior */}
+      {/* 🔹 Solo mostrar este botón si el usuario NO es dependiente */}
+      {!isDependiente && (
+        <TouchableOpacity
+          style={styles.dependientesButton}
+          onPress={() => navigation.navigate("dependentScreen", { id_empresa: user.id_empresa })}
+        >
+          <Text style={styles.buttonText}>Ver Dependientes</Text>
+        </TouchableOpacity>
+      )}
+
       <ImageBackground
-        source={require('../assets/logo.png')} // Ruta de la imagen
+        source={require('../assets/logo.png')}
         style={styles.background}
       />
     </View>
@@ -140,15 +152,22 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
   },
+  dependientesButton: {
+    backgroundColor: '#17a2b8',
+    padding: 15,
+    borderRadius: 8,
+    marginTop: 20,
+    alignItems: 'center',
+  },
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
   },
   background: {
-    height: 200, // Altura de la imagen en la parte inferior
-    justifyContent: 'center', // Centrar contenido dentro de la imagen
+    height: 200,
+    justifyContent: 'center',
     alignItems: 'center',
-    resizeMode: 'cover', // Ajustar la imagen al contenedor
+    resizeMode: 'cover',
     marginTop: 20,
   },
 });

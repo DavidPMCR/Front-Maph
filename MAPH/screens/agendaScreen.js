@@ -98,7 +98,7 @@ const AgendaScreen = ({ navigation, route }) => {
           fecha: '',
           hora_inicio: '',
           hora_final: '',
-          
+
         });
         setEmailPaciente(''); // Se limpia el correo aquí
         setIsModalVisible(false); // Cerrar el modal
@@ -108,7 +108,7 @@ const AgendaScreen = ({ navigation, route }) => {
       console.error('Error al crear la cita:', error.message);
       Alert.alert('Error', 'No se pudo crear la cita. Verifica los datos.');
     }
-};
+  };
 
 
   // Función para eliminar una cita
@@ -223,7 +223,7 @@ const AgendaScreen = ({ navigation, route }) => {
         }
       />
 
-      {/* Botón para crear nueva cita */}
+      {/* Botón para crear nueva cita-modal */}
       <TouchableOpacity style={styles.addButton} onPress={() => setIsModalVisible(true)}>
         <Text style={styles.addButtonText}>Crear Cita</Text>
       </TouchableOpacity>
@@ -259,9 +259,10 @@ const AgendaScreen = ({ navigation, route }) => {
             {/* Campo de correo electrónico */}
             <Text>Correo Electrónico:</Text>
             <View style={styles.emailContainer}>
-              <Text style={styles.emailText}>{emailPaciente}</Text>
+              <Text style={[styles.emailText, !emailPaciente && styles.placeholder]}>
+                {emailPaciente || "Correo Electrónico"}
+              </Text>
             </View>
-
 
             {/* Campo de hora inicial */}
             <Text>Hora Inicial:</Text>

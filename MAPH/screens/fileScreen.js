@@ -15,13 +15,22 @@ import MaskInput from 'react-native-mask-input';
 import axios from 'axios';
 
 const FileUpload = ({ route }) => {
-  const { user } = route.params; // Información del usuario logueado
-  const { control, handleSubmit, reset } = useForm(); // Añadimos `reset` para limpiar campos
-  const [patients, setPatients] = useState([]); // Lista de pacientes
-  const [selectedPatient, setSelectedPatient] = useState(''); // Paciente seleccionado
+  const { user } = route.params;
+  const { control, handleSubmit, reset, setValue } = useForm(); // Usamos `setValue` para establecer valores iniciales
+  const [patients, setPatients] = useState([]);
+  const [selectedPatient, setSelectedPatient] = useState('');
   const [image1, setImage1] = useState(null);
   const [image2, setImage2] = useState(null);
   const [image3, setImage3] = useState(null);
+
+  // Función para obtener la fecha actual en formato AAAA/MM/DD
+  const getCurrentDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Mes con dos dígitos
+    const day = String(today.getDate()).padStart(2, '0'); // Día con dos dígitos
+    return `${year}/${month}/${day}`;
+  };
 
   // Cargar pacientes desde el backend
   const fetchPatients = async () => {
@@ -45,6 +54,7 @@ const FileUpload = ({ route }) => {
   useEffect(() => {
     requestPermission();
     fetchPatients();
+    setValue('fecha', getCurrentDate()); // Cargar la fecha actual en el campo
   }, []);
 
   const pickImage = async (setFile) => {
@@ -68,7 +78,6 @@ const FileUpload = ({ route }) => {
   };
 
   const onSubmit = async (data) => {
-    // Validar que todos los campos estén completos
     if (!selectedPatient) {
       Alert.alert('Error', 'Por favor seleccione un paciente.');
       return;
@@ -89,10 +98,8 @@ const FileUpload = ({ route }) => {
       return;
     }
 
-    // Crear el objeto FormData
     const formData = new FormData();
 
-    // Adjunta las imágenes si están presentes
     if (image1) {
       formData.append('image1', {
         uri: image1.uri,
@@ -115,9 +122,8 @@ const FileUpload = ({ route }) => {
       });
     }
 
-    // Adjunta el resto de los datos
-    formData.append('id_empresa', user.id_empresa); // Asignar id_empresa del usuario
-    formData.append('id_cedula', selectedPatient); // Cédula del paciente seleccionado
+    formData.append('id_empresa', user.id_empresa);
+    formData.append('id_cedula', selectedPatient);
     formData.append('fecha', data.fecha);
     formData.append('detalle', data.detalle);
 
@@ -130,9 +136,8 @@ const FileUpload = ({ route }) => {
       Alert.alert('Éxito', 'Archivos subidos correctamente.');
       console.log('Respuesta del servidor:', response.data);
 
-      // Limpiar campos después de la subida exitosa
       setSelectedPatient('');
-      reset({ fecha: '', detalle: '' }); // Limpia los campos manejados por `react-hook-form`
+      reset({ fecha: getCurrentDate(), detalle: '' });
       setImage1(null);
       setImage2(null);
       setImage3(null);
@@ -146,7 +151,6 @@ const FileUpload = ({ route }) => {
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Subir archivos de un paciente</Text>
 
-      {/* Seleccionar Paciente */}
       <Text style={styles.label}>Seleccione un Paciente:</Text>
       <View style={styles.pickerContainer}>
         <Picker
@@ -164,7 +168,6 @@ const FileUpload = ({ route }) => {
         </Picker>
       </View>
 
-      {/* Campo de Fecha con Máscara */}
       <Text style={styles.label}>Fecha:</Text>
       <Controller
         control={control}
@@ -174,13 +177,12 @@ const FileUpload = ({ route }) => {
             style={styles.input}
             value={value}
             onChangeText={onChange}
-            mask={[/\d/, /\d/, /\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/]} // Máscara AAAA/MM/DD
+            mask={[/\d/, /\d/, /\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/]}
             placeholder="AAAA/MM/DD"
           />
         )}
       />
 
-      {/* Campo de Detalle */}
       <Text style={styles.label}>Detalle:</Text>
       <Controller
         control={control}
@@ -196,31 +198,17 @@ const FileUpload = ({ route }) => {
         )}
       />
 
-      {/* Botones para Subir Imágenes */}
-      <TouchableOpacity
-        onPress={() => pickImage(setImage1)}
-        style={styles.uploadButton}
-      >
+      <TouchableOpacity onPress={() => pickImage(setImage1)} style={styles.uploadButton}>
         <Text style={styles.buttonText}>Seleccionar Imagen 1</Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => pickImage(setImage2)}
-        style={styles.uploadButton}
-      >
+      <TouchableOpacity onPress={() => pickImage(setImage2)} style={styles.uploadButton}>
         <Text style={styles.buttonText}>Seleccionar Imagen 2</Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => pickImage(setImage3)}
-        style={styles.uploadButton}
-      >
+      <TouchableOpacity onPress={() => pickImage(setImage3)} style={styles.uploadButton}>
         <Text style={styles.buttonText}>Seleccionar Imagen 3</Text>
       </TouchableOpacity>
 
-      {/* Botón de Enviar */}
-      <TouchableOpacity
-        onPress={handleSubmit(onSubmit)}
-        style={styles.submitButton}
-      >
+      <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.submitButton}>
         <Text style={styles.submitButtonText}>Subir</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -228,58 +216,14 @@ const FileUpload = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#f8f9fa',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  input: {
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#ced4da',
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 15,
-    backgroundColor: '#fff',
-  },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: '#ced4da',
-    borderRadius: 5,
-    marginBottom: 20,
-  },
-  uploadButton: {
-    backgroundColor: '#d6d8db', // Color grisáceo
-    padding: 15,
-    borderRadius: 5,
-    marginBottom: 10,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#333',
-    fontWeight: 'bold',
-  },
-  submitButton: {
-    backgroundColor: '#28a745',
-    padding: 15,
-    borderRadius: 5,
-    marginTop: 20,
-  },
-  submitButtonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
+  container: { flex: 1, padding: 20, backgroundColor: '#f8f9fa' },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
+  label: { fontSize: 16, marginBottom: 5 },
+  input: { height: 50, borderWidth: 1, borderColor: '#ced4da', borderRadius: 5, paddingHorizontal: 10, marginBottom: 15, backgroundColor: '#fff' },
+  pickerContainer: { borderWidth: 1, borderColor: '#ced4da', borderRadius: 5, marginBottom: 20 },
+  uploadButton: { backgroundColor: '#d6d8db', padding: 15, borderRadius: 5, marginBottom: 10, alignItems: 'center' },
+  submitButton: { backgroundColor: '#28a745', padding: 15, borderRadius: 5, marginTop: 20 },
+  submitButtonText: { color: '#fff', textAlign: 'center', fontWeight: 'bold' },
 });
 
 export default FileUpload;

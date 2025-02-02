@@ -15,7 +15,7 @@ import forgotPasswordScreen from './screens/forgotPasswordScreen'
 import patientFileScreen from './screens/patientFileScreen'
 import sendCreateUserMailScreen from './screens/sendCreateUserMailScreen'
 import sendSupportMailScreen from './screens/sendSupportMailScreen'
-
+import dependentScreen from './screens/dependentScreen'
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -102,6 +102,12 @@ const AppNavigator = () => {
           name="patientFileScreen"
           component={patientFileScreen}
           options={{ title: 'Archivos de paciente' }}
+        />
+
+        <Stack.Screen
+          name="dependentScreen"
+          component={dependentScreen}
+          options={{ title: 'Dependientes' }}
         />
 
 

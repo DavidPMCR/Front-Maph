@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
 import axios from 'axios';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = ({ navigation }) => {
   const [cedula, setCedula] = useState('');
@@ -9,33 +10,50 @@ const LoginScreen = ({ navigation }) => {
   
 
   const handleLogin = async () => {
-    // Validación de los campos
     if (!cedula.trim()) {
-      setError('Usuario es obligatorio');
-      return;
+        setError("Usuario es obligatorio");
+        return;
     }
     if (!contrasena.trim()) {
-      setError('La contraseña es obligatoria');
-      return;
+        setError("La contraseña es obligatoria");
+        return;
     }
 
     try {
-      const response = await axios.post('http://192.168.1.98:3001/auth/login', {
-        id_cedula: cedula,
-        contrasena: contrasena,
-      });
-      
-      if (response.data.code == 200) {
-       const user = response.data.data.user; // Extraer el usuario
-      navigation.navigate('principalScreen', { user });
-      } else {
-        setError('Credenciales incorrectas');
-      }
+        const response = await axios.post("http://192.168.1.98:3001/auth/login", {
+            id_cedula: cedula,
+            contrasena: contrasena,
+        });
+
+        if (response.data.code == 200) {
+            const { user, token } = response.data.data;
+
+            // Guardar el token en AsyncStorage
+            await AsyncStorage.setItem("token", token);
+
+            // Guardar el usuario en AsyncStorage
+            await AsyncStorage.setItem("user", JSON.stringify(user));
+
+            // Redirigir a la pantalla principal con los datos del usuario
+            navigation.reset({
+                index: 0,
+                routes: [{ name: "principalScreen", params: { user } }],
+            });
+        } else {
+            setError("Credenciales incorrectas");
+        }
     } catch (error) {
-      setError('Hubo un error al auntentificar,usuario o contraseña invalido');
-      console.error('Error de login:', error.message);
+        if (error.response && error.response.status === 403) {
+            setError("Ya hay una sesión activa. Cierra sesión antes de volver a entrar.");
+        } else {
+            setError("Error al autenticar.");
+        }
+        console.error("Error de login:", error.message);
     }
-  };
+};
+
+
+
 
   return (
     <ImageBackground

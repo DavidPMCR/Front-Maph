@@ -36,36 +36,35 @@ const CreatePatientScreen = ({ route }) => {
   };
 
   // Manejar la selección de un paciente desde el combo box
-  // Manejar la selección de un paciente desde el combo box
-const handleSelectPatient = (id_cedula) => {
-  setSelectedPatient(id_cedula);
+  const handleSelectPatient = (id_cedula) => {
+    setSelectedPatient(id_cedula);
 
-  // Si se selecciona un valor en blanco, limpiar el formulario
-  if (!id_cedula) {
-    setFormData({
-      id_cedula: '',
-      tipo_cedula: '',
-      id_empresa: user.id_empresa,
-      nombre: '',
-      apellidos: '',
-      conocido_como: '',
-      correo: '',
-      telefono: '',
-      telefono_emergencia: '',
-      residencia: '',
-      observaciones: '',
-    });
-    setIsEditing(false); // Deshabilitar modo de edición si está activo
-    return;
-  }
+    // Si se selecciona un valor en blanco, limpiar el formulario
+    if (!id_cedula) {
+      setFormData({
+        id_cedula: '',
+        tipo_cedula: '',
+        id_empresa: user.id_empresa,
+        nombre: '',
+        apellidos: '',
+        conocido_como: '',
+        correo: '',
+        telefono: '',
+        telefono_emergencia: '',
+        residencia: '',
+        observaciones: '',
+      });
+      setIsEditing(false); // Deshabilitar modo de edición si está activo
+      return;
+    }
 
-  // Cargar los datos del paciente seleccionado
-  const patient = patients.find((p) => p.id_cedula === id_cedula);
-  if (patient) {
-    setFormData({ ...patient });
-    setIsEditing(false);
-  }
-};
+    // Cargar los datos del paciente seleccionado
+    const patient = patients.find((p) => p.id_cedula === id_cedula);
+    if (patient) {
+      setFormData({ ...patient });
+      setIsEditing(false);
+    }
+  };
 
 
   // Guardar paciente actualizado
@@ -98,14 +97,13 @@ const handleSelectPatient = (id_cedula) => {
         observaciones: formData.observaciones || 'ninguna',
       };
 
-      // Verificar el payload antes de enviarlo
-      console.log('Payload preparado para enviar:', payload);
+    
 
       // Llamada al backend
       const response = await axios.patch(`http://192.168.1.98:3001/patient`, payload);
 
       // Verificar la respuesta del servidor
-      console.log('Respuesta del servidor:', response);
+     // console.log('Respuesta del servidor:', response);
 
       if (response.status === 200 || response.status === 201) {
         Alert.alert('Éxito', 'Paciente actualizado correctamente.');
@@ -135,63 +133,63 @@ const handleSelectPatient = (id_cedula) => {
     }
   };
 
-// Eliminar paciente
-const handleDeletePatient = async () => {
-  try {
-    if (!formData.id_cedula) {
-      Alert.alert('Error', 'No hay paciente seleccionado para eliminar.');
-      return;
-    }
+  // Eliminar paciente
+  const handleDeletePatient = async () => {
+    try {
+      if (!formData.id_cedula) {
+        Alert.alert('Error', 'No hay paciente seleccionado para eliminar.');
+        return;
+      }
 
-    // Mostrar alerta de confirmación
-    Alert.alert(
-      'Confirmar Eliminación',
-      '¿Está seguro de que desea eliminar este paciente?',
-      [
-        { text: 'Cancelar', style: 'cancel' }, // Botón para cancelar
-        {
-          text: 'Eliminar',
-          onPress: async () => {
-            try {
-              const response = await axios.delete(
-                `http://192.168.1.98:3001/patient/${formData.id_cedula}`
-              );
-              console.log('Respuesta del servidor al eliminar paciente:', response);
+      // Mostrar alerta de confirmación
+      Alert.alert(
+        'Confirmar Eliminación',
+        '¿Está seguro de que desea eliminar este paciente?',
+        [
+          { text: 'Cancelar', style: 'cancel' }, // Botón para cancelar
+          {
+            text: 'Eliminar',
+            onPress: async () => {
+              try {
+                const response = await axios.delete(
+                  `http://192.168.1.98:3001/patient/${formData.id_cedula}`
+                );
+                console.log('Respuesta del servidor al eliminar paciente:', response);
 
-              if (response.status === 200 || response.status === 201) {
-                Alert.alert('Éxito', 'Paciente eliminado correctamente.');
-                // Limpiar formulario después de eliminar
-                setFormData({
-                  id_cedula: '',
-                  tipo_cedula: '',
-                  id_empresa: user.id_empresa,
-                  nombre: '',
-                  apellidos: '',
-                  conocido_como: '',
-                  correo: '',
-                  telefono: '',
-                  telefono_emergencia: '',
-                  residencia: '',
-                  observaciones: '',
-                });
-                fetchPatients(); // Recargar la lista de pacientes
-              } else {
-                throw new Error('Error inesperado en la eliminación del paciente.');
+                if (response.status === 200 || response.status === 201) {
+                  Alert.alert('Éxito', 'Paciente eliminado correctamente.');
+                  // Limpiar formulario después de eliminar
+                  setFormData({
+                    id_cedula: '',
+                    tipo_cedula: '',
+                    id_empresa: user.id_empresa,
+                    nombre: '',
+                    apellidos: '',
+                    conocido_como: '',
+                    correo: '',
+                    telefono: '',
+                    telefono_emergencia: '',
+                    residencia: '',
+                    observaciones: '',
+                  });
+                  fetchPatients(); // Recargar la lista de pacientes
+                } else {
+                  throw new Error('Error inesperado en la eliminación del paciente.');
+                }
+              } catch (error) {
+                console.error('Error al eliminar el paciente:', error.message);
+                Alert.alert('Error', 'No se pudo eliminar el paciente.');
               }
-            } catch (error) {
-              console.error('Error al eliminar el paciente:', error.message);
-              Alert.alert('Error', 'No se pudo eliminar el paciente.');
-            }
+            },
           },
-        },
-      ],
-      { cancelable: true } // Permite cerrar la alerta sin seleccionar una opción
-    );
-  } catch (error) {
-    console.error('Error al eliminar el paciente:', error.message);
-    Alert.alert('Error', 'No se pudo eliminar el paciente.');
-  }
-};
+        ],
+        { cancelable: true } // Permite cerrar la alerta sin seleccionar una opción
+      );
+    } catch (error) {
+      console.error('Error al eliminar el paciente:', error.message);
+      Alert.alert('Error', 'No se pudo eliminar el paciente.');
+    }
+  };
 
 
 
@@ -256,10 +254,11 @@ const handleDeletePatient = async () => {
       {/* Formulario de paciente */}
       <ScrollView>
         {Object.entries({
-          id_cedula: 'Cédula*',
-          tipo_cedula: 'Tipo de Cédula*',
-          nombre: 'Nombre*',
-          apellidos: 'Apellidos*',
+        
+          id_cedula: 'Cédula',
+          tipo_cedula: 'Tipo de Cédula',
+          nombre: 'Nombre',
+          apellidos: 'Apellidos',
           conocido_como: 'Conocido como',
           correo: 'Correo',
           telefono: 'Teléfono',
@@ -278,7 +277,7 @@ const handleDeletePatient = async () => {
         ))}
       </ScrollView>
 
-  
+
       {/* Botones */}
       <View style={styles.buttonContainer}>
         {/* Botón para editar paciente */}
@@ -323,14 +322,39 @@ const handleDeletePatient = async () => {
       </View>
 
 
+
       {/* Modal */}
       <Modal visible={isModalVisible} transparent={true} animationType="slide">
         <View style={styles.modalContainer}>
           <ScrollView contentContainerStyle={styles.modalContent}>
             <Text style={styles.modalTitle}>Nuevo Paciente</Text>
+
+            {/* Campo Cédula */}
+            <TextInput
+              style={styles.input}
+              value={formData.id_cedula}
+              onChangeText={(value) => setFormData({ ...formData, id_cedula: value })}
+              placeholder="Cédula*"
+            />
+
+            {/*  Tipo de Cédula (Picker) DEBAJO de "Cédula" */}
+            <Text style={styles.label}>Tipo de Cédula*</Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={formData.tipo_cedula}
+                onValueChange={(value) => setFormData({ ...formData, tipo_cedula: value })}
+                mode="dropdown"
+              >
+                <Picker.Item label="Tipo de cédula" value="" />
+                <Picker.Item label="Físico Nacional" value="N" />
+                <Picker.Item label="Extranjero" value="E" />
+                <Picker.Item label="Nacionalizado" value="NA" />
+                <Picker.Item label="Pasaporte" value="P" />
+              </Picker>
+            </View>
+
+            {/*  Campos de texto restantes */}
             {Object.entries({
-              id_cedula: 'Cédula*',
-              tipo_cedula: 'Tipo de Cédula*',
               nombre: 'Nombre*',
               apellidos: 'Apellidos*',
               conocido_como: 'Conocido como',
@@ -349,23 +373,19 @@ const handleDeletePatient = async () => {
               />
             ))}
 
+            {/*Botones */}
             <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={() => setIsModalVisible(false)}
-              >
+              <TouchableOpacity style={styles.cancelButton} onPress={() => setIsModalVisible(false)}>
                 <Text style={styles.buttonText}>Cancelar</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.saveButton}
-                onPress={handleCreatePatient}
-              >
+              <TouchableOpacity style={styles.saveButton} onPress={handleCreatePatient}>
                 <Text style={styles.buttonText}>Guardar</Text>
               </TouchableOpacity>
             </View>
           </ScrollView>
         </View>
       </Modal>
+
     </View>
   );
 };

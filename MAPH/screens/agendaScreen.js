@@ -10,6 +10,7 @@ const AgendaScreen = ({ navigation, route }) => {
   const [events, setEvents] = useState([]); // Lista de citas/eventos
   const [isModalVisible, setIsModalVisible] = useState(false); // Control del modal
   const [patients, setPatients] = useState([]); // Lista de pacientes obtenidos del backend
+  const [emailPaciente, setEmailPaciente] = useState('');// email del paciente
   const [newAppointment, setNewAppointment] = useState({
     id_empresa: user.id_empresa, // ID de la empresa del usuario logueado
     id_cedula_usuario: user.id_cedula, // ID del usuario logueado
@@ -47,7 +48,7 @@ const AgendaScreen = ({ navigation, route }) => {
     }
   };
 
-  // Función para guardar una nueva cita
+  // Función para guardar una nueva cita y enviar correo de confirmacion
   const handleSaveAppointment = async () => {
     const { id_cedula_paciente, fecha, hora_inicio, hora_final } = newAppointment;
 
@@ -65,6 +66,30 @@ const AgendaScreen = ({ navigation, route }) => {
       if (response.status === 200 || response.status === 201) {
         Alert.alert('Éxito', 'Cita creada exitosamente.');
 
+        // Si el paciente tiene correo, enviamos la confirmación
+        if (emailPaciente && emailPaciente !== 'Correo no registrado') {
+          const emailData = {
+            email: emailPaciente,
+            reason: `📅 Confirmación de Cita:\n
+            - 🏥 Paciente: ${patients.find(p => p.id_cedula === id_cedula_paciente)?.nombre || "Paciente"}
+            - 👤 Asignado por: ${user.nombre} ${user.apellidos}
+            - 📆 Fecha: ${fecha}
+            - ⏰ Horario: ${hora_inicio} - ${hora_final}`
+          };
+
+          await axios.post('http://192.168.1.98:3001/sendEmail/cita', emailData)
+            .then(() => {
+              Alert.alert('Correo Enviado', 'Se ha enviado la confirmación al correo del paciente.');
+              console.log('Correo enviado correctamente');
+            })
+            .catch(error => {
+              console.error('Error al enviar correo:', error.message);
+              Alert.alert('Error', 'No se pudo enviar el correo de confirmación.');
+            });
+        } else {
+          console.log('Paciente sin correo registrado. No se envió confirmación.');
+        }
+
         // Limpiar los campos del modal después de guardar
         setNewAppointment({
           id_empresa: user.id_empresa,
@@ -73,8 +98,9 @@ const AgendaScreen = ({ navigation, route }) => {
           fecha: '',
           hora_inicio: '',
           hora_final: '',
-        });
 
+        });
+        setEmailPaciente(''); // Se limpia el correo aquí
         setIsModalVisible(false); // Cerrar el modal
         fetchEvents(); // Recargar las citas
       }
@@ -83,6 +109,7 @@ const AgendaScreen = ({ navigation, route }) => {
       Alert.alert('Error', 'No se pudo crear la cita. Verifica los datos.');
     }
   };
+
 
   // Función para eliminar una cita
   const handleDeleteAppointment = async (id) => {
@@ -113,7 +140,7 @@ const AgendaScreen = ({ navigation, route }) => {
       ]
     );
   };
-  
+
 
   // Función para manejar la selección de fecha en el calendario
   const handleDatePress = (date) => {
@@ -127,10 +154,10 @@ const AgendaScreen = ({ navigation, route }) => {
   // Renderizar cada evento/cita del día seleccionado
   const renderEventItem = ({ item }) => {
     if (item.date === selectedDate) {
-      // Asegúrate de que el `title` está estructurado como "NombreUsuario - NombrePaciente ApellidosPaciente"
+      // "NombreUsuario - NombrePaciente ApellidosPaciente"
       const [assignedUser, patientInfo] = item.title.split(' - ');
       const [patientFirstName, ...patientLastNames] = patientInfo.split(' '); // Divide en nombre y apellidos
-  
+
       return (
         <TouchableOpacity
           style={styles.eventItem}
@@ -154,7 +181,7 @@ const AgendaScreen = ({ navigation, route }) => {
     }
     return null;
   };
-  
+
 
   // Cargar eventos y pacientes al montar el componente
   useEffect(() => {
@@ -196,7 +223,7 @@ const AgendaScreen = ({ navigation, route }) => {
         }
       />
 
-      {/* Botón para crear nueva cita */}
+      {/* Botón para crear nueva cita-modal */}
       <TouchableOpacity style={styles.addButton} onPress={() => setIsModalVisible(true)}>
         <Text style={styles.addButtonText}>Crear Cita</Text>
       </TouchableOpacity>
@@ -212,19 +239,29 @@ const AgendaScreen = ({ navigation, route }) => {
             <View style={styles.pickerContainer}>
               <Picker
                 selectedValue={newAppointment.id_cedula_paciente}
-                onValueChange={(itemValue) =>
-                  setNewAppointment({ ...newAppointment, id_cedula_paciente: itemValue })
-                }
+                onValueChange={(itemValue) => {
+                  const selectedPatient = patients.find(patient => patient.id_cedula === itemValue);
+                  setNewAppointment({ ...newAppointment, id_cedula_paciente: itemValue });
+                  setEmailPaciente(selectedPatient?.correo || 'Correo no registrado'); // Mostrar el correo o "Correo no registrado"
+                }}
               >
                 <Picker.Item label="Selecciona un paciente" value="" />
                 {patients.map((patient) => (
                   <Picker.Item
                     key={patient.id_cedula}
-                    label={`${patient.nombre} ${patient.apellidos} (conocid@ como: ${patient.conocido_como})`}
+                    label={`${patient.nombre} ${patient.apellidos} (cc: ${patient.conocido_como})`}
                     value={patient.id_cedula}
                   />
                 ))}
               </Picker>
+            </View>
+
+            {/* Campo de correo electrónico */}
+            <Text>Correo Electrónico:</Text>
+            <View style={styles.emailContainer}>
+              <Text style={[styles.emailText, !emailPaciente && styles.placeholder]}>
+                {emailPaciente || "Correo Electrónico"}
+              </Text>
             </View>
 
             {/* Campo de hora inicial */}
@@ -380,6 +417,19 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+
+  emailContainer: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 10,
+    backgroundColor: '#fff',
+  },
+  emailText: {
+    fontSize: 16,
+    color: '#333',
   },
 });
 

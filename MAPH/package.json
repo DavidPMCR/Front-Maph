@@ -11,7 +11,6 @@
   "dependencies": {
     "@expo/metro-runtime": "~4.0.0",
     "@expo/vector-icons": "^14.0.4",
-    "@react-native-mask-input": "^X.X.X",
     "@react-native-community/datetimepicker": "^8.2.0",
     "@react-native-community/viewpager": "^5.0.11",
     "@react-native-picker/picker": "^2.11.0",
@@ -24,6 +23,7 @@
     "expo": "~52.0.25",
     "expo-document-picker": "~13.0.2",
     "expo-image-picker": "~16.0.4",
+    "expo-sharing": "~13.0.1",
     "expo-status-bar": "~2.0.1",
     "express": "^4.21.2",
     "multer": "^1.4.5-lts.1",
@@ -33,10 +33,12 @@
     "react-hook-form": "^7.54.2",
     "react-native": "0.76.6",
     "react-native-calendars": "^1.1308.0",
+    "react-native-date-picker": "^5.0.9",
     "react-native-document-picker": "^9.3.1",
     "react-native-gesture-handler": "^2.22.0",
     "react-native-image-picker": "^7.2.3",
     "react-native-mask-input": "^1.2.3",
+    "react-native-modal": "^13.0.1",
     "react-native-modal-datetime-picker": "^18.0.0",
     "react-native-reanimated": "^3.16.7",
     "react-native-safe-area-context": "^5.1.0",
@@ -45,7 +47,8 @@
     "react-native-toast-message": "^2.2.1",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.13",
-    "rn-fetch-blob": "^0.12.0"
+    "rn-fetch-blob": "^0.12.0",
+    "@react-native-async-storage/async-storage": "1.23.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

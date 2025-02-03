@@ -87,7 +87,7 @@ const ConsultationScreen = ({ route }) => {
   const handleSaveConsultation = async () => {
     try {
       // Validar datos antes de enviar
-      if (!formData.id_consulta || !formData.id_cedula || !formData.tipoconsulta || !formData.plan_tratamiento || !formData.fecha_consulta) {
+      if (!formData.id_consulta || !formData.id_cedula || !formData.tipoconsulta || !formData.fecha_consulta) {
         Alert.alert('Error', 'Por favor complete todos los campos obligatorios.');
         return;
       }
@@ -168,6 +168,14 @@ const ConsultationScreen = ({ route }) => {
     });
   };
 
+  const handleOpenModal = () => {
+    setIsModalVisible(true);
+    setFormData((prevState) => ({
+      ...prevState,
+      fecha_consulta: getTodayDate(), // Asigna la fecha actual
+    }));
+  };
+
   // Manejar cambios en los campos del modal
   const handleModalChange = (key, value) => {
     setFormData({ ...formData, [key]: value });
@@ -194,10 +202,25 @@ const ConsultationScreen = ({ route }) => {
     }
   };
 
+  //funcion para llamar la fecha
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Asegurar 2 dígitos
+    const day = String(today.getDate()).padStart(2, '0'); // Asegurar 2 dígitos
+    return `${year}-${month}-${day}`; // Formato YYYY-MM-DD
+  };
+
   // Cargar los datos al montar el componente
   useEffect(() => {
     fetchConsultationData();
-    fetchPatients(); // Cargar pacientes al montar el componente
+    fetchPatients();
+
+    // Establecer la fecha actual si está vacía
+    setFormData((prevState) => ({
+      ...prevState,
+      fecha_consulta: prevState.fecha_consulta || getTodayDate(),
+    }));
   }, []);
 
   return (
@@ -365,11 +388,12 @@ const ConsultationScreen = ({ route }) => {
             styles.finalizeButton,
             formData.id_consulta && styles.disabledButton, // Deshabilitar si hay datos
           ]}
-          onPress={() => setIsModalVisible(true)} // Mostrar modal al presionar
+          onPress={handleOpenModal} // Ahora usa esta función
           disabled={!!formData.id_consulta} // Deshabilitado si hay datos
         >
           <Text style={styles.buttonText}>Crear Consulta</Text>
         </TouchableOpacity>
+
       </View>
 
 
@@ -398,51 +422,71 @@ const ConsultationScreen = ({ route }) => {
             </View>
 
             {/* Campos del formulario */}
+            <Text style={styles.label}>Tipo de Consulta:</Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={formData.tipoconsulta}
+                onValueChange={(value) => handleChange('tipoconsulta', value)}
+                mode="dropdown"
+              >
+                <Picker.Item label="Selecciona consulta" value="" />
+                <Picker.Item label="General" value="General" />
+                <Picker.Item label="Curaciones" value="Curaciones" />
+                <Picker.Item label="Suero terapia" value="Suero terapia" />
+                <Picker.Item label="Cuido domiciliario" value="Cuido domiciliario" />
+                <Picker.Item label="Retiro de suturas" value="Retiro de suturas" />
+                <Picker.Item label="Pedicure clínico" value="Pedicure clínico" />
+                <Picker.Item label="Perforaciones" value="Perforaciones" />
+                <Picker.Item label="Mesoterapia" value="Mesoterapia" />
+                <Picker.Item label="Acucadgut" value="Acucadgut" />
+              </Picker>
+            </View>
+            <Text style={styles.label}>Valoración:</Text>
             <TextInput
               style={styles.input}
-              placeholder="Tipo Consulta*"
-              value={formData.tipoconsulta}
-              onChangeText={(value) => handleModalChange('tipoconsulta', value)}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Valoración (Opcional)"
+              placeholder=" (Opcional)"
               value={formData.valoracion}
               onChangeText={(value) => handleModalChange('valoracion', value)}
             />
+            <Text style={styles.label}>Presión Arterial:</Text>
             <TextInput
               style={styles.input}
-              placeholder="Presión Arterial (Opcional)"
+              placeholder=" (Opcional)"
               value={formData.presion_arterial}
               onChangeText={(value) => handleModalChange('presion_arterial', value)}
             />
+            <Text style={styles.label}>Frecuencia Cardíacao:</Text>
             <TextInput
               style={styles.input}
-              placeholder="Frecuencia Cardíaca (Opcional)"
+              placeholder=" (Opcional)"
               value={formData.frecuencia_cardiaca}
               onChangeText={(value) => handleModalChange('frecuencia_cardiaca', value)}
             />
+            <Text style={styles.label}>Saturación de Oxígeno:</Text>
             <TextInput
               style={styles.input}
-              placeholder="Saturación de Oxígeno (Opcional)"
+              placeholder=" (Opcional)"
               value={formData.saturacion_oxigeno}
               onChangeText={(value) => handleModalChange('saturacion_oxigeno', value)}
             />
+            <Text style={styles.label}>Glicemia:</Text>
             <TextInput
               style={styles.input}
-              placeholder="Glicemia (Opcional)"
+              placeholder="(Opcional)"
               value={formData.glicemia}
               onChangeText={(value) => handleModalChange('glicemia', value)}
             />
+            <Text style={styles.label}>frecuencia respiratoria:</Text>
             <TextInput
               style={styles.input}
-              placeholder="Frecuencia Respiratoria (Opcional)"
+              placeholder="(Opcional)"
               value={formData.frecuencia_respiratoria}
               onChangeText={(value) => handleModalChange('frecuencia_respiratoria', value)}
             />
+            <Text style={styles.label}>Plan de tratamiento:</Text>
             <TextInput
               style={[styles.input, styles.textarea]} // Combina estilos generales y específicos del textarea
-              placeholder="Plan de Tratamiento (Opcional)"
+              placeholder="(Opcional)"
               value={formData.plan_tratamiento}
               onChangeText={(value) => handleModalChange('plan_tratamiento', value)}
               multiline={true}
@@ -461,7 +505,6 @@ const ConsultationScreen = ({ route }) => {
             />
             {/* Monto de la consulta */}
             <Text style={styles.label}>Monto a cancelar:</Text>
-
             <TextInput
               style={styles.input}
               placeholder="Monto Consulta*"

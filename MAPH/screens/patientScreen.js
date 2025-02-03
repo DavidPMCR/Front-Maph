@@ -43,7 +43,7 @@ const MenuWithIconsAndLogo = ({ navigation, route }) => {
           onPress={() => navigation.navigate('fileScreen', { user })}
         >
           <FontAwesome name="folder" size={24} color="black" />
-          <Text style={styles.menuText}>Archivos</Text>
+          <Text style={styles.menuText}>Subur archivos</Text>
         </TouchableOpacity>
       </View>
 

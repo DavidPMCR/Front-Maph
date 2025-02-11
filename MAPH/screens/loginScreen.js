@@ -102,45 +102,43 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    padding: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Fondo semitransparente
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: '#000',
+    color: '#007bff',
   },
   input: {
     height: 50,
     width: '80%',
-    borderColor: '#ccc',
+    borderColor: '#007bff',
     borderWidth: 1,
     borderRadius: 8,
     marginBottom: 15,
     paddingHorizontal: 15,
-    backgroundColor: '#fff',
+    backgroundColor: '#e9ecef',
   },
-  loginButton: {
+  button: {
     backgroundColor: '#fdb813',
-    borderRadius: 8,
     paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
     paddingHorizontal: 30,
     marginTop: 10,
   },
-  loginButtonText: {
+  buttonText: {
     color: '#000',
+    fontSize: 16,
     fontWeight: 'bold',
   },
-  registerText: {
+  backText: {
     marginTop: 20,
-    color: '#0000ee',
-    textDecorationLine: 'underline',
-  },
-  forgotPasswordText: {
-    marginTop: 10,
+    textAlign: 'center',
     color: '#0000ee',
     textDecorationLine: 'underline',
   },
@@ -152,8 +150,10 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     marginBottom: 10,
+    textAlign: 'center',
     fontSize: 14,
   },
 });
+
 
 export default LoginScreen;

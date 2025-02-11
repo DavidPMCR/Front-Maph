@@ -106,16 +106,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-    color: '#333',
+    color: '#00AEEF', // Celeste
   },
   input: {
     height: 50,
-    borderColor: '#ccc',
+    borderColor: '#00AEEF', // Celeste
     borderWidth: 1,
     borderRadius: 8,
     marginBottom: 15,
     paddingHorizontal: 10,
-    backgroundColor: '#fff',
+    backgroundColor: '#E0F7FA', // Celeste claro
   },
   textArea: {
     height: 100,

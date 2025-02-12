@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert, ActivityIndicator, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert, TextInput } from 'react-native';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import api from '../controller/api';
 
-const months = {
+const months = {  //se les asigna a los meses un value para ser enviado
   enero: 1,
   febrero: 2,
   marzo: 3,
@@ -21,7 +22,7 @@ const months = {
 };
 
 const ConsultationReport = () => {
-  const [patients, setPatients] = useState([]);
+  const [patients, setPatients] = useState([]); // constante para seleccinar el paciente traido del backend
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [consultations, setConsultations] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -29,9 +30,9 @@ const ConsultationReport = () => {
   const [year, setYear] = useState('');
   const [month, setMonth] = useState('');
 
-  const fetchPatients = async () => {
+  const fetchPatients = async () => { //aca se trae los pacientes 
     try {
-      const response = await axios.get('http://192.168.1.98:3001/patient');
+      const response = await axios.get(`${api}/patient`);
       setPatients(response.data.data);
     } catch (error) {
       console.error('Error al cargar los pacientes:', error.message);
@@ -47,7 +48,7 @@ const ConsultationReport = () => {
     
     setLoading(true);
     try {
-      const response = await axios.get(`http://192.168.1.98:3001/consultation/${cedula}`);
+      const response = await axios.get(`${api}/consultation/${cedula}`);
       
       if (response.data.data.length === 0) {
         setConsultations([]); // Limpiar si el paciente no tiene consultas
@@ -62,7 +63,7 @@ const ConsultationReport = () => {
       setLoading(false);
     }
   };
-
+//genera el archivo tipo excel 
   const generateCSVFile = async () => {
     try {
       if (reportType === 'consultations') {
@@ -89,7 +90,7 @@ const ConsultationReport = () => {
           return;
         }
 
-        const response = await axios.get(`http://192.168.1.98:3001/report/${year}/${months[month.toLowerCase()]}`);
+        const response = await axios.get(`${api}/report/${year}/${months[month.toLowerCase()]}`);
         const data = response.data.data;
         const keys = Object.keys(data[0]);
         const headers = keys.join(',') + '\n';
@@ -107,7 +108,7 @@ const ConsultationReport = () => {
           return;
         }
 
-        const response = await axios.get(`http://192.168.1.98:3001/report/agrupado/${year}/${months[month.toLowerCase()]}`);
+        const response = await axios.get(`${api}/report/agrupado/${year}/${months[month.toLowerCase()]}`);
         const { detalles, total_consultas, monto_total_mensual } = response.data.data;
         const keys = Object.keys(detalles[0]);
         const headers = keys.join(',') + ',Total Consultas,Monto Total Mensual\n';
@@ -190,12 +191,16 @@ const ConsultationReport = () => {
             value={year}
             onChangeText={(text) => setYear(text)}
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Mes (ej. enero)"
-            value={month}
-            onChangeText={(text) => setMonth(text)}
-          />
+          <Picker
+            selectedValue={month}
+            onValueChange={(itemValue) => setMonth(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Seleccione un mes" value="" />
+            {Object.keys(months).map((monthName) => (
+              <Picker.Item key={monthName} label={monthName} value={monthName.toLowerCase()} />
+            ))}
+          </Picker>
         </>
       )}
 

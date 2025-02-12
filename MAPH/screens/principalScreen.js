@@ -3,6 +3,7 @@ import axios from "axios";
 import { View, Text, TouchableOpacity, StyleSheet, ImageBackground } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import api from '../controller/api';
 
 const MenuWithIconsAndLogo = ({ navigation, route }) => {
     const [user, setUser] = useState(route.params?.user || {});
@@ -24,7 +25,7 @@ const MenuWithIconsAndLogo = ({ navigation, route }) => {
             const token = await AsyncStorage.getItem("token");
 
             //  Llamar al backend para cerrar sesión
-            await axios.post("http://192.168.1.98:3001/auth/logout", {}, {
+            await axios.post(`${api}/auth/logout`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -97,9 +98,9 @@ const MenuWithIconsAndLogo = ({ navigation, route }) => {
 
             {/* Botón para cerrar sesión */}
             <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-    <FontAwesome name="sign-out" size={20} color="#444" />
-    <Text style={styles.logoutText}>Salir</Text>
-</TouchableOpacity>
+                <FontAwesome name="sign-out" size={20} color="#444" />
+                <Text style={styles.logoutText}>Salir</Text>
+            </TouchableOpacity>
 
             <ImageBackground source={require("../assets/logo.png")} style={styles.background} />
         </View>
@@ -146,24 +147,24 @@ const styles = StyleSheet.create({
         color: "#000",
     },
     logoutButton: {
-      flexDirection: "row",
-      alignItems: "center",
-      backgroundColor: "#e0f7fa", // Color suave que combina con el fondo
-      padding: 10, // Más pequeño
-      borderRadius: 8, // Bordes más redondeados
-      justifyContent: "center",
-      marginBottom: 10, // Menos margen
-      width: "50%" ,
-     marginHorizontal: 100, // Espaciado más pequeño
-      
-  },
-  logoutText: {
-      marginLeft: 8,
-      fontSize: 16, // Letra más pequeña
-      fontWeight: "bold",
-      color: "#444", // Color más tenue en lugar de blanco
-  },
-  
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: "#e0f7fa", // Color suave que combina con el fondo
+        padding: 10, // Más pequeño
+        borderRadius: 8, // Bordes más redondeados
+        justifyContent: "center",
+        marginBottom: 10, // Menos margen
+        width: "50%",
+        marginHorizontal: 100, // Espaciado más pequeño
+
+    },
+    logoutText: {
+        marginLeft: 8,
+        fontSize: 16, // Letra más pequeña
+        fontWeight: "bold",
+        color: "#444", // Color más tenue en lugar de blanco
+    },
+
 });
 
 export default MenuWithIconsAndLogo;

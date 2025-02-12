@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, Alert } from 'react-native';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
+import api from '../controller/api';
 
 const CreatePatientScreen = ({ route }) => {
   const { user } = route.params; // Usuario logueado
@@ -27,7 +28,7 @@ const CreatePatientScreen = ({ route }) => {
   // Cargar pacientes
   const fetchPatients = async () => {
     try {
-      const response = await axios.get('http://192.168.1.98:3001/patient');
+      const response = await axios.get(`${api}/patient`);
       setPatients(response.data.data);
     } catch (error) {
       console.error('Error al cargar los pacientes:', error.message);
@@ -100,7 +101,7 @@ const CreatePatientScreen = ({ route }) => {
     
 
       // Llamada al backend
-      const response = await axios.patch(`http://192.168.1.98:3001/patient`, payload);
+      const response = await axios.patch(`${api}/patient`, payload);
 
       // Verificar la respuesta del servidor
      // console.log('Respuesta del servidor:', response);
@@ -152,7 +153,7 @@ const CreatePatientScreen = ({ route }) => {
             onPress: async () => {
               try {
                 const response = await axios.delete(
-                  `http://192.168.1.98:3001/patient/${formData.id_cedula}`
+                  `${api}/${formData.id_cedula}`
                 );
                 console.log('Respuesta del servidor al eliminar paciente:', response);
 
@@ -201,7 +202,7 @@ const CreatePatientScreen = ({ route }) => {
         return;
       }
 
-      await axios.post('http://192.168.1.98:3001/patient/', formData);
+      await axios.post(`${api}/patient/`, formData);
       Alert.alert('Paciente creado exitosamente.');
 
       setFormData({

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, Modal } from
 import { Calendar } from 'react-native-calendars';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
+import api from '../controller/api';
 
 const AgendaScreen = ({ navigation, route }) => {
   const { user } = route.params; // Usuario logueado pasado como parámetro
@@ -62,7 +63,7 @@ const AgendaScreen = ({ navigation, route }) => {
     }
 
     try {
-      const response = await axios.post('http://192.168.1.98:3001/diary', newAppointment);
+      const response = await axios.post(`${api}/diary`, newAppointment);
       if (response.status === 200 || response.status === 201) {
         Alert.alert('Éxito', 'Cita creada exitosamente.');
 
@@ -77,7 +78,7 @@ const AgendaScreen = ({ navigation, route }) => {
             - ⏰ Horario: ${hora_inicio} - ${hora_final}`
           };
 
-          await axios.post('http://192.168.1.98:3001/sendEmail/cita', emailData)
+          await axios.post(`${api}/sendEmail/cita`, emailData)
             .then(() => {
               Alert.alert('Correo Enviado', 'Se ha enviado la confirmación al correo del paciente.');
               console.log('Correo enviado correctamente');
@@ -126,7 +127,7 @@ const AgendaScreen = ({ navigation, route }) => {
           style: 'destructive', // Botón de eliminar (rojo en iOS)
           onPress: async () => {
             try {
-              const response = await axios.delete(`http://192.168.1.98:3001/diary/${id}`);
+              const response = await axios.delete(`${api}/diary/${id}`);
               if (response.status === 200) {
                 Alert.alert('Éxito', 'La cita ha sido eliminada.');
                 fetchEvents(); // Recargar las citas después de eliminar

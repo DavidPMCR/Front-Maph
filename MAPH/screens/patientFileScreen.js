@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, Alert, FlatList, TouchableOpacity, Modal
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import ModalComponent from 'react-native-modal';
+import api from '../controller/api';
 
 const PatientImagesScreen = () => {
   const [patients, setPatients] = useState([]);
@@ -15,7 +16,7 @@ const PatientImagesScreen = () => {
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const response = await axios.get('http://192.168.1.98:3001/patient');
+        const response = await axios.get(`${api}/patient`);
         setPatients(response.data.data);
       } catch (error) {
         console.error('Error al cargar los pacientes:', error.message);
@@ -33,7 +34,7 @@ const PatientImagesScreen = () => {
     }
 
     try {
-      const response = await axios.get(`http://192.168.1.98:3001/api/files/patient/${cedula}`);
+      const response = await axios.get(`${api}/api/files/patient/${cedula}`);
       const data = response.data;
 
       if (data.length === 0) {

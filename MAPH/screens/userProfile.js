@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
 import axios from 'axios';
+import api from '../controller/api';
 
 const UserProfile = ({ route, navigation }) => {
   const { user } = route.params;
@@ -20,7 +21,7 @@ const UserProfile = ({ route, navigation }) => {
 
   const handleAccept = async () => {
     try {
-      const response = await axios.patch(`http://192.168.1.98:3001/user`, formData);
+      const response = await axios.patch(`${api}/user`, formData);
       if (response.status === 200) {
         alert('Datos actualizados exitosamente');
         setIsEditing(false);

@@ -1,18 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-  ScrollView,
-} from 'react-native';
+import {View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView,} from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
 import MaskInput from 'react-native-mask-input';
 import axios from 'axios';
+import api from '../controller/api';
 
 const FileUpload = ({ route }) => {
   const { user } = route.params;
@@ -35,7 +28,7 @@ const FileUpload = ({ route }) => {
   // Cargar pacientes desde el backend
   const fetchPatients = async () => {
     try {
-      const response = await axios.get('http://192.168.1.98:3001/patient');
+      const response = await axios.get(`${api}/patient`);
       setPatients(response.data.data);
     } catch (error) {
       console.error('Error al cargar pacientes:', error.message);
@@ -128,7 +121,7 @@ const FileUpload = ({ route }) => {
     formData.append('detalle', data.detalle);
 
     try {
-      const response = await axios.post('http://192.168.1.98:3001/api/files/upload', formData, {
+      const response = await axios.post(`${api}/api/files/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

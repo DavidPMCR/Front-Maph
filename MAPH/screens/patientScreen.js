@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import api from '../controller/api';
 
 const MenuWithIconsAndLogo = ({ navigation, route }) => {
   const { user } = route.params;
@@ -43,7 +44,7 @@ const MenuWithIconsAndLogo = ({ navigation, route }) => {
           onPress={() => navigation.navigate('fileScreen', { user })}
         >
           <FontAwesome name="folder" size={24} color="black" />
-          <Text style={styles.menuText}>Subur archivos</Text>
+          <Text style={styles.menuText}>Subir archivos</Text>
         </TouchableOpacity>
       </View>
 

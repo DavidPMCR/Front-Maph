@@ -24,7 +24,7 @@ const AgendaScreen = ({ navigation, route }) => {
   // Función para cargar las citas desde el backend
   const fetchEvents = async () => {
     try {
-      const response = await axios.get('http://192.168.1.98:3001/diary');
+      const response = await axios.get(`${api}/diary`);
       const loadedEvents = response.data.data.map((event) => ({
         id: event.numero_cita.toString(),
         date: event.fecha.split('T')[0], // Solo se toma la parte de la fecha
@@ -41,7 +41,7 @@ const AgendaScreen = ({ navigation, route }) => {
   // Función para cargar pacientes desde el backend
   const fetchPatients = async () => {
     try {
-      const response = await axios.get('http://192.168.1.98:3001/patient');
+      const response = await axios.get(`${api}/patient`);
       setPatients(response.data.data); // Guardar la lista de pacientes
     } catch (error) {
       console.error('Error al cargar los pacientes:', error.message);
